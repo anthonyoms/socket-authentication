@@ -6,6 +6,13 @@ const url = (window.location.hostname.includes('localhost')) ?
     'http://localhost:8080/api/auth/' :
     'https://node-course-h.herokuapp.com/api/auth/';
 
+//Referencias HTML
+
+const txtUid     = document.querySelector('#txtUid');
+const txtMensaje = document.querySelector('#txtMensaje');
+const ulUsuarios = document.querySelector('#ulUsuarios');
+const ulMensajes = document.querySelector('#ulMensajes');
+const btnSalir   = document.querySelector('#btnSalir');
 
 const validarJWT = async() => {
 
@@ -26,7 +33,63 @@ const validarJWT = async() => {
     const {nombre} = usuarioDB;
     document.title = nombre;
 
+    await conectarSocket();
+
 }
+
+const conectarSocket = async() => {
+
+    socket = io({
+        'extraHeaders': {
+            'x-token': localStorage.getItem('token')
+        }
+    });
+
+    socket.on('connect', () => {
+
+        console.log('Sockets online');
+
+    });
+
+    socket.on('disconnect', () => {
+
+        console.log('Sockets offline');
+
+    });
+
+    socket.on('recibir-mensajes', () => {
+        //TODO:
+
+    });
+
+    socket.on('usuarios-activos', dibujarUsuarios );
+
+    socket.on('mensaje-privado', () => {
+      //TODO:
+
+    });
+
+};
+
+const dibujarUsuarios = ( usuarios = [] ) => {
+
+    let usersHtml = '';
+
+    usuarios.forEach( ({nombre, uid}) => {
+
+            usersHtml += `
+                <li>
+                    <p>
+                        <h5 class="text-success"> ${nombre} </h5>
+                        <span class="fs-6 text-muted" > ${uid} </span>
+                    </p>
+                </li>
+            `
+    });
+
+    ulUsuarios.innerHTML = usersHtml;
+
+};
 
 
 const main = async() => {
@@ -37,4 +100,4 @@ const main = async() => {
 
 main();
 
-//const socket  = io();
+//;
